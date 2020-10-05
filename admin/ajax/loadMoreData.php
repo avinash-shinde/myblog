@@ -1,14 +1,18 @@
 <?php
 
 	require_once('../../includes/config.php');
+	$limit = PAGINATIONLIMIT;
 
 	$retunArray = array();
 
+	$page_no = $_GET['page_no'];
+	$offset = ($page_no - 1) *$limit;
+
 	if(isset($_GET['catId'])){
 
-		$stmt = $db->query("SELECT articleId, articleTitle,articleDescription, cdate FROM blog_post WHERE articleId < '".$_GET['last_id']."' AND catId='".$_GET['catId']."'  ORDER BY articleId DESC LIMIT 3");
+		$stmt = $db->query("SELECT articleId, articleTitle,articleDescription, cdate FROM blog_post WHERE catId='".$_GET['catId']."'  ORDER BY articleId DESC LIMIT $offset,$limit");
 	}else{
-		$stmt = $db->query("SELECT articleId, articleTitle,articleDescription, cdate FROM blog_post WHERE articleId < '".$_GET['last_id']."' ORDER BY articleId DESC LIMIT 3");
+		$stmt = $db->query("SELECT articleId, articleTitle,articleDescription, cdate FROM blog_post ORDER BY articleId DESC LIMIT $offset,$limit");
 	}
 
    	$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
