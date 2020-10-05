@@ -2,7 +2,8 @@
 //connection File 
 require_once('includes/config.php');
 $categoryArray = $user->getCategory();
- include("head.php");
+$limit = PAGINATIONLIMIT;
+include("head.php");
 ?>
 
 <title>My Blog</title>
@@ -13,13 +14,25 @@ $categoryArray = $user->getCategory();
    
       <?php
           try {   
+                if(isset($_GET['catId'])){
+                  if($_GET['catId'] !=''){
+                    $stmtcount = $db->query('SELECT count(articleId)as articlecount FROM blog_post WHERE catId = '.$_GET['catId']);
+                  } 
+                }else{
+                  $stmtcount = $db->query('SELECT count(articleId)as articlecount FROM blog_post');
+                }
+                
+                $resultCount = $stmtcount->fetchAll(PDO::FETCH_ASSOC);
+
+                $no_of_pages = ceil($resultCount[0]['articlecount'] / $limit);
+              
                 //selecting data by id
                 if(isset($_GET['catId'])){
                   if($_GET['catId'] !=''){
-                    $stmt = $db->query('SELECT articleId, articleTitle,articleDescription, cdate FROM blog_post WHERE catId = '.$_GET['catId'].' ORDER BY articleId DESC LIMIT 3');
+                    $stmt = $db->query('SELECT articleId, articleTitle,articleDescription, cdate FROM blog_post WHERE catId = '.$_GET['catId'].' ORDER BY articleId DESC LIMIT 0,'.$limit.'');
                   } 
                 }else{
-                  $stmt = $db->query('SELECT articleId, articleTitle,articleDescription, cdate FROM blog_post ORDER BY articleId DESC LIMIT 3');
+                  $stmt = $db->query('SELECT articleId, articleTitle,articleDescription, cdate FROM blog_post ORDER BY articleId DESC LIMIT 0,'.$limit.'');
                 }
                 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
@@ -44,5 +57,6 @@ $categoryArray = $user->getCategory();
   </div>
 </div>
 <div class="loader"style="display: none;"></div>
+<input type="hidden" class="no_of_pages" value="<?= $no_of_pages;?>">
 
 <?php include("footer.php");  ?>
