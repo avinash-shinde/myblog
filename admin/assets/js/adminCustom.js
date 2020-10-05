@@ -2,10 +2,16 @@ $("document").ready(function(){
 
   //add user
   $('#myModal .subbtn').on('click',function(){
-  		console.log('add user');
-      var username = $("#username").val();  
+  		var username = $("#username").val();  
       var password = $("#password").val();
       var confirm_pass = $("#confirm_pass").val();
+      var stop = 1;
+      if(username !=''){
+        stop = 0;
+      }else{
+        alert('enter username');
+        return false;
+      }
       if(password != confirm_pass){
         alert('confirm password does not matched');
         return false;
@@ -45,6 +51,10 @@ $("document").ready(function(){
       var username = $("#editusername").val();  
       var password = $("#editpassword").val();
       var confirm_pass = $("#editconfirm_pass").val();
+      if (username == '' && username == null){
+        alert('please enter username');
+        return false;
+      }
       if(password != confirm_pass){
         alert('confirm password does not matched');
         return false;
@@ -66,4 +76,5 @@ $("document").ready(function(){
     });
     return false;
   });
+
 });
