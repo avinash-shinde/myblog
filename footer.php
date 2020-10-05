@@ -6,31 +6,38 @@
 </html>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
+    var currentPage = 1;
+    var isReqSent = 0;
+    var stopAjax = 0;
     $(window).scroll(function() {
         if($(window).scrollTop() + $(window).height() >= $(document).height()) {
-            var last_id = $('.container .content div').last().attr('id');
+            
             var searchParams = new URLSearchParams(window.location.search);
             var catId = searchParams.get('catId');
             var url = '';
             if(catId !='' && catId != null){
-              url = '/myblog/admin/ajax/loadMoreData.php?last_id='+last_id+'&catId='+catId;
+              url = '/myblog/admin/ajax/loadMoreData.php?page_no='+(currentPage + 1)+'&catId='+catId;
             }else{
-              url = '/myblog/admin/ajax/loadMoreData.php?last_id=' + last_id;
+              url = '/myblog/admin/ajax/loadMoreData.php?page_no=' + (currentPage + 1);
             }
-            if(last_id != 1){
-              loadMoreData(last_id,url);
+            currentPage += 1;
+            if(isReqSent != 1 && stopAjax != 1){
+              if ($(".no_of_pages").val() != 1) {
+                loadMoreData(url);  
+              }
             }
         }
     });
 
 
-    function loadMoreData(last_id,url){
+    function loadMoreData(url){
       $.ajax(
             {
               url: url,
               type: "get",
               beforeSend: function()
               {
+                isReqSent = 1;
                 $('.loader').show();
               }
             })
@@ -38,6 +45,10 @@
             {
                 $('.loader').hide();
                 $(".container .content").append(data);
+                if (currentPage == $(".no_of_pages").val()) {
+                  stopAjax = 1;                  
+                }
+                isReqSent = 0;
             })
             .fail(function(jqXHR, ajaxOptions, thrownError)
             {
@@ -45,21 +56,4 @@
             });
     }
 
-    // When the user scrolls the page, execute myFunction
-    window.onscroll = function() {myFunction()};
-
-    // Get the navbar
-    var navbar = document.getElementById("navbar");
-
-    // Get the offset position of the navbar
-    var sticky = navbar.offsetTop;
-
-    // Add the sticky class to the navbar when you reach its scroll position. Remove "sticky" when you leave the scroll position
-    function myFunction() {
-      if (window.pageYOffset >= sticky) {
-        navbar.classList.add("sticky")
-      } else {
-        navbar.classList.remove("sticky");
-      }
-    }
 </script>
